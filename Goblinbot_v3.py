@@ -4,10 +4,10 @@ import youtube_dl
 import os
 
 client = commands.Bot(command_prefix="?")
-token = open("token.txt", "r")
+token = 'insira o token do bot aqui'
 
 
-@client.command()
+@client.command(aliases=['p'])
 async def play(ctx, url: str):
     botinvc = ctx.guild.me.voice
     song_there = os.path.isfile('song.webm')
@@ -17,6 +17,7 @@ async def play(ctx, url: str):
             os.remove('song.webm')
     except PermissionError:
         await ctx.send('adicionei a musica na fila')
+        queue.append(url)
         return
 
     voicechannel = discord.utils.get(ctx.guild.voice_channels, name='Estudar é o caralho')
@@ -74,6 +75,12 @@ async def resume(ctx):
 async def stop(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice.stop()
+
+
+@client.command()
+async def skil(ctx):
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    voice.skip()
 
 
 client.run(token)
