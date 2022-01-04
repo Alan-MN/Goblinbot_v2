@@ -20,7 +20,7 @@ async def play(ctx, url: str):
         queue.append(url)
         return
 
-    voicechannel = discord.utils.get(ctx.guild.voice_channels, name='Estudar é o caralho')
+    voicechannel = discord.utils.get(ctx.guild.voice_channels, name='BADERNA')
     if not botinvc:
         await voicechannel.connect()
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
@@ -44,13 +44,11 @@ async def play(ctx, url: str):
         await ctx.send(f'Tocando agora: {name}')
 
 
-@client.command()
+@client.command(aliases=['l'])
 async def leave(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_connected():
         await voice.disconnect()
-    else:
-        await ctx.send('sair sem estar num canal de voz é foda')
 
 
 @client.command()
@@ -58,8 +56,6 @@ async def pause(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_playing():
         voice.pause()
-    else:
-        await ctx.send('pausar oq? nem tem nada tocando')
 
 
 @client.command()
@@ -67,8 +63,6 @@ async def resume(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_paused():
         voice.resume()
-    else:
-        await ctx.send('despausar oq? já ta tocando')
 
 
 @client.command()
@@ -78,7 +72,7 @@ async def stop(ctx):
 
 
 @client.command()
-async def skil(ctx):
+async def skip(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice.skip()
 
