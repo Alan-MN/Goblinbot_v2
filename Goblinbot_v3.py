@@ -1,47 +1,30 @@
 import discord
 from discord.ext import commands
-import youtube_dl
 import os
-
+from musica import Musica
 client = commands.Bot(command_prefix="?")
-token = 'insira o token do bot aqui'
+token = open('token.txt','r')
 
 
 @client.command(aliases=['p'])
 async def play(ctx, url: str):
     botinvc = ctx.guild.me.voice
-    song_there = os.path.isfile('song.webm')
-    queue = [url]
-    try:
-        if song_there:
-            os.remove('song.webm')
-    except PermissionError:
-        await ctx.send('adicionei a musica na fila')
-        queue.append(url)
+    if ctx.author.voice and ctx.author.voice.channel:
+        canal_voz = ctx.author.voice.channel
+    else:
+        await ctx.send('você precisa estar em um canal de voz para tocar música')
         return
-
-    voicechannel = discord.utils.get(ctx.guild.voice_channels, name='BADERNA')
     if not botinvc:
-        await voicechannel.connect()
+        await canal_voz.connect()
+    musica = Musica(url)
+    for file in os.listdir('./'):
+        if file.endswith('.webm'):
+            os.remove('song.webm')
+    musica.pegaInfo()
+    musica.download()
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-
-    ydl_opts = {
-        'format': '249/250/251',
-    }
-    name = ""
-    while len(queue)>0:
-        link_muisca = queue.pop(0)
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([link_muisca])
-        for file in os.listdir('./'):
-            if file.endswith('.webm'):
-                for i in range(len(file.split('.'))):
-                    if file.split('.')[i] !='webm':
-                        name = name + file.split('.')[i]
-                os.rename(file, 'song.webm')
-
-        voice.play(discord.FFmpegOpusAudio(executable='C:/FFMPEG/ffmpeg.exe', source='song.webm'))
-        await ctx.send(f'Tocando agora: {name}')
+    voice.play(discord.FFmpegOpusAudio(executable='C:/FFMPEG/ffmpeg.exe', source='song.webm'))
+    await ctx.send(f'Tocando agora: {musica.nome}')
 
 
 @client.command(aliases=['l'])
@@ -65,16 +48,16 @@ async def resume(ctx):
         voice.resume()
 
 
-@client.command()
+@client.command(aliases ='st')
 async def stop(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice.stop()
 
 
-@client.command()
+@client.command(aliases = 'sk')
 async def skip(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice.skip()
 
 
-client.run(token)
+client.run(token.read())
