@@ -21,9 +21,10 @@ async def play(ctx, url: str):
         if file.endswith('.webm'):
             os.remove('song.webm')
     musica.pegaInfo()
-    musica.download()
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    voice.play(discord.FFmpegOpusAudio(executable='C:/FFMPEG/ffmpeg.exe', source='song.webm'))
+    voice.play(discord.FFmpegPCMAudio(musica.True_url))
+    voice.source = discord.PCMVolumeTransformer(voice.source)
+    voice.source.volume = 1
     await ctx.send(f'Tocando agora: {musica.nome}')
 
 
@@ -48,16 +49,15 @@ async def resume(ctx):
         voice.resume()
 
 
-@client.command(aliases ='st')
+@client.command(aliases =['st'])
 async def stop(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice.stop()
 
 
-@client.command(aliases = 'sk')
+@client.command(aliases = ['sk'])
 async def skip(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice.skip()
-
 
 client.run(token.read())
