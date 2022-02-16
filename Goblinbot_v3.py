@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-import os
 from musica import Musica
 client = commands.Bot(command_prefix="?")
 token = open('token.txt','r')
@@ -17,10 +16,6 @@ async def play(ctx, url: str):
     if not botinvc:
         await canal_voz.connect()
     musica = Musica(url)
-    for file in os.listdir('./'):
-        if file.endswith('.webm'):
-            os.remove('song.webm')
-    musica.pegaInfo()
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     voice.play(discord.FFmpegPCMAudio(musica.True_url))
     voice.source = discord.PCMVolumeTransformer(voice.source)
